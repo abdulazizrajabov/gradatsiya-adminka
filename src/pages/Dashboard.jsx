@@ -18,18 +18,18 @@ const Dashboard = () => {
         const fetchStats = async () => {
             try {
                 const [users, classes, rewards, storeItems, transactions] = await Promise.all([
-                    api.get('/users'),
+                    api.get('/students'),
                     api.get('/classes'),
                     api.get('/rewards'),
                     api.get('/store/items'),
-                    api.get('/history'),
+                    // api.get('/history'),
                 ]);
                 setStats({
                     users: users.data.length,
                     classes: classes.data.length,
                     rewards: rewards.data.length,
                     storeItems: storeItems.data.length,
-                    transactions: transactions.data.length,
+                    transactions: transactions?.data?.length ?? 0,
                 });
             } catch (error) {
                 console.error('Ошибка при получении статистики:', error);

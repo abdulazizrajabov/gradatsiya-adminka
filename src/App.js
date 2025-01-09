@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Routes, Route } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import Header from './components/Header';
@@ -12,15 +12,23 @@ import History from './pages/History';
 import Store from './pages/Store';
 import LoginForm from './components/LoginForm';
 import ProtectedRoute from './components/ProtectedRoute';
+import {ToastContainer} from "react-toastify";
 
 const App = () => {
+    const [token, setToken] = useState('');
+
+    useEffect(() => {
+        setToken(localStorage.getItem('jwtToken'));
+    }, [localStorage.getItem('jwtToken')]);
+
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', paddingLeft: 200}}>
+            <ToastContainer/>
             <CssBaseline />
             {/* Показываем Sidebar только если пользователь аутентифицирован */}
-            {localStorage.getItem('jwtToken') && <Sidebar />}
+            {token && <Sidebar />}
             <div style={{ flexGrow: 1 }}>
-                {localStorage.getItem('jwtToken') && <Header />}
+                {token && <Header />}
                 <Routes>
                     <Route path="/login" element={<LoginForm />} />
                     <Route
@@ -75,7 +83,7 @@ const App = () => {
                     <Route
                         path="*"
                         element={
-                            localStorage.getItem('jwtToken') ? (
+                            token ? (
                                 <Dashboard />
                             ) : (
                                 <LoginForm />

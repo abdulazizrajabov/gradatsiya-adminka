@@ -14,8 +14,6 @@ import {
     TextField,
     DialogActions,
     IconButton,
-    Switch,
-    FormControlLabel,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,9 +26,8 @@ const Rewards = () => {
         id: null,
         name: '',
         description: '',
-        price: '',
-        quantity: '',
-        is_active: true,
+        type: '',
+        points: '',
     });
     const [isEditing, setIsEditing] = useState(false);
     const [error, setError] = useState('');
@@ -53,9 +50,8 @@ const Rewards = () => {
             id: null,
             name: '',
             description: '',
-            price: '',
-            quantity: '',
-            is_active: true,
+            type: '',
+            points: '',
         });
         setIsEditing(false);
         setOpen(true);
@@ -86,23 +82,23 @@ const Rewards = () => {
     };
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setCurrentReward({
             ...currentReward,
-            [name]: type === 'checkbox' ? checked : value,
+            [name]: value,
         });
     };
 
     const handleSubmit = async () => {
-        const { name, description, price, quantity, is_active } = currentReward;
+        const { name, description, type,points } = currentReward;
 
-        if (!name.trim() || !description.trim() || price === '' || quantity === '') {
+        if (!name.trim() || !description.trim() || !points) {
             setError('Все поля обязательны и должны быть заполнены.');
             return;
         }
 
-        if (isNaN(price) || isNaN(quantity)) {
-            setError('Поля "Цена" и "Количество" должны быть числами.');
+        if (!(type === "bonus" || type === "penalty")) {
+            setError('Type incorrect');
             return;
         }
 
@@ -111,17 +107,15 @@ const Rewards = () => {
                 await api.put(`/rewards/${currentReward.id}`, {
                     name,
                     description,
-                    price: parseInt(price),
-                    quantity: parseInt(quantity),
-                    is_active,
+                    type,
+                    points,
                 });
             } else {
                 await api.post('/rewards', {
                     name,
                     description,
-                    price: parseInt(price),
-                    quantity: parseInt(quantity),
-                    is_active,
+                    type,
+                    points,
                 });
             }
             fetchRewards();
@@ -146,9 +140,8 @@ const Rewards = () => {
                         <TableCell>ID</TableCell>
                         <TableCell>Название</TableCell>
                         <TableCell>Описание</TableCell>
-                        <TableCell>Цена (баллы)</TableCell>
-                        <TableCell>Количество</TableCell>
-                        <TableCell>Активна</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Points</TableCell>
                         <TableCell>Действия</TableCell>
                     </TableRow>
                 </TableHead>
@@ -158,9 +151,8 @@ const Rewards = () => {
                             <TableCell>{reward.id}</TableCell>
                             <TableCell>{reward.name}</TableCell>
                             <TableCell>{reward.description}</TableCell>
-                            <TableCell>{reward.price}</TableCell>
-                            <TableCell>{reward.quantity}</TableCell>
-                            <TableCell>{reward.is_active ? 'Да' : 'Нет'}</TableCell>
+                            <TableCell>{reward.type}</TableCell>
+                            <TableCell>{reward.points}</TableCell>
                             <TableCell>
                                 <IconButton onClick={() => handleEdit(reward)} color="primary">
                                     <EditIcon />
@@ -198,32 +190,22 @@ const Rewards = () => {
                     />
                     <TextField
                         margin="dense"
-                        label="Цена (баллы)"
-                        name="price"
-                        type="number"
+                        label="Type"
+                        name="type"
+                        type="text"
                         fullWidth
-                        value={currentReward.price}
+                        helperText={"bonus or penalty"}
+                        value={currentReward.type}
                         onChange={handleChange}
                     />
                     <TextField
                         margin="dense"
-                        label="Количество"
-                        name="quantity"
+                        label="Points"
+                        name="points"
                         type="number"
                         fullWidth
-                        value={currentReward.quantity}
+                        value={currentReward.points}
                         onChange={handleChange}
-                    />
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                checked={currentReward.is_active}
-                                onChange={handleChange}
-                                name="is_active"
-                                color="primary"
-                            />
-                        }
-                        label="Активна"
                     />
                     {error && (
                         <Typography color="error" variant="body2">

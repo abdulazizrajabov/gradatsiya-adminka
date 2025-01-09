@@ -16,7 +16,7 @@ const LoginForm = () => {
     const handleSubmit = async () => {
         try {
             const response = await api.post('/auth/login', {
-                username: form.username,
+                telegram_id: form.username,
                 password: form.password,
             });
             const { token } = response.data;
