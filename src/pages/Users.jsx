@@ -29,6 +29,7 @@ const Users = () => {
 
     const [form, setForm] = useState({
         telegram_id: '',
+        telegram_id2: '',
         full_name: '',
         role: 'student',
         class_id: '',
@@ -70,6 +71,7 @@ const Users = () => {
     const handleClose = () => {
         setForm({
             telegram_id: '',
+            telegram_id2: '',
             full_name: '',
             role: 'student',
             class_id: '',
@@ -85,6 +87,7 @@ const Users = () => {
         try {
             await api.post('/students', {
                 telegram_id: parseInt(form.telegram_id),
+                telegram_id2: parseInt(form.telegram_id),
                 full_name: form.full_name,
                 role: form.role,
                 class_id: form.class_id ? parseInt(form.class_id) : null,
@@ -127,6 +130,7 @@ const Users = () => {
                     <TableRow>
                         <TableCell>ID</TableCell>
                         <TableCell>Telegram ID</TableCell>
+                        <TableCell>Telegram ID 2</TableCell>
                         <TableCell>Имя</TableCell>
                         <TableCell>Роль</TableCell>
                         <TableCell>ID Класса</TableCell>
@@ -139,6 +143,7 @@ const Users = () => {
                         <TableRow key={user.id}>
                             <TableCell>{user.id}</TableCell>
                             <TableCell>{user.telegram_id}</TableCell>
+                            <TableCell>{user.telegram_id2}</TableCell>
                             <TableCell>{user.full_name}</TableCell>
                             <TableCell>{user.role}</TableCell>
                             <TableCell>{user.class_id ?? '-'}</TableCell>
