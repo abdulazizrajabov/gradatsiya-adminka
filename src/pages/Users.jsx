@@ -222,6 +222,15 @@ const Users = () => {
                     />
                     <TextField
                         margin="dense"
+                        label="Telegram ID 2"
+                        name="telegram_id2"
+                        type="number"
+                        fullWidth
+                        value={form.telegram_id2}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="dense"
                         label="Полное Имя"
                         name="full_name"
                         type="text"
