@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {use, useEffect, useState} from 'react';
 import {
     Typography,
     Table,
@@ -16,7 +16,7 @@ import {
     FormControl, RadioGroup, FormControlLabel, Radio, Select, MenuItem, TextareaAutosize
 } from '@mui/material';
 import api from '../services/api';
-import {Add} from "@mui/icons-material";
+import {Add, Edit} from "@mui/icons-material";
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -26,6 +26,7 @@ const Users = () => {
     const [filterType, setFilterType] = useState('all')
     const [selectedReward, setSelectedReward] = useState(null)
     const [reason,setReason] = useState('')
+    const [selected,setSelected] = useState(null)
 
     const [form, setForm] = useState({
         telegram_id: '',
@@ -76,6 +77,7 @@ const Users = () => {
             role: 'student',
             class_id: '',
         });
+        setSelected(null)
         setOpen(false);
     };
 
@@ -85,14 +87,24 @@ const Users = () => {
 
     const handleSubmit = async () => {
         try {
-            await api.post('/students', {
-                telegram_id: parseInt(form.telegram_id),
-                telegram_id2: parseInt(form.telegram_id),
-                full_name: form.full_name,
-                role: form.role,
-                class_id: form.class_id ? parseInt(form.class_id) : null,
-                password: form.password,
-            });
+            if (!selected) {
+                await api.post('/students', {
+                    telegram_id: parseInt(form.telegram_id),
+                    telegram_id2: parseInt(form.telegram_id2),
+                    full_name: form.full_name,
+                    role: form.role,
+                    class_id: form.class_id ? parseInt(form.class_id) : null,
+                    password: form.password,
+                });
+            }else {
+                await api.put(`/students/${selected}`, {
+                    telegram_id: parseInt(form.telegram_id),
+                    telegram_id2: parseInt(form.telegram_id2),
+                    full_name: form.full_name,
+                    role: form.role,
+                    class_id: form.class_id ? parseInt(form.class_id) : null,
+                });
+            }
             fetchUsers();
             handleClose();
         } catch (error) {
@@ -152,6 +164,19 @@ const Users = () => {
                                 <IconButton onClick={() => setAddingIsOpen({userId:user.id,chatId:user.telegram_id})} color="primary">
                                     <Add />
                                 </IconButton>
+                                <IconButton onClick={() => {
+                                    handleOpen()
+                                    setSelected(user.id)
+                                    setForm({
+                                        telegram_id: user.telegram_id,
+                                        telegram_id2: user.telegram_id2,
+                                        full_name: user.full_name,
+                                        role: user.role,
+                                        class_id: user.class_id,
+                                    })
+                                }} color="primary">
+                                    <Edit />
+                                </IconButton>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -209,7 +234,7 @@ const Users = () => {
             </Dialog>
             {/* Диалог для добавления пользователя */}
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Добавить Пользователя</DialogTitle>
+                <DialogTitle> {!!!selected ? "Добавить Пользователя" : "Edit Пользователя"}</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"
@@ -258,7 +283,7 @@ const Users = () => {
                             value={form.class_id}
                             onChange={handleChange}
                         />
-                    ) : (
+                    ) : ( !!selected &&
                         <TextField
                             margin="dense"
                             label="Парол"
@@ -276,7 +301,7 @@ const Users = () => {
                         Отмена
                     </Button>
                     <Button onClick={handleSubmit} color="primary">
-                        Добавить
+                        {!!!selected ? "Добавить" : "Edit"}
                     </Button>
                 </DialogActions>
             </Dialog>
